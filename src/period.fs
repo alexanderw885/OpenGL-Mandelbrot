@@ -35,7 +35,7 @@ void main()
         z = complex_mult(z, z);
         z += c;
 
-        if(length(z - zOld) < 1e-4)
+        if(dot(z-zOld, z-zOld) < 1e-6)
         {
             period = curr_period;
             period_iter = i;
@@ -54,17 +54,22 @@ void main()
         {
             num_iter = i;
             dist = d;
+            break;
         }
     }
     float n = float(num_iter) / float(maxIter);
 
     // fragColor = vec4(0,1-n,n,1);
     fragColor = vec4(0,0,0,1);
-    if(num_iter == 0) {fragColor.x = 1;}
+    if(num_iter > 0)
+    {
+        if ((num_iter & 1) != 0){fragColor = vec4(0,0,0,1);}
+        else {fragColor = vec4(1,1,1,1);}
+    }
     if(period > 0)
     {
-        if(period_iter % 2 == 0){fragColor.y = 1;}
-        else {fragColor.z = 1;}
+        if((num_iter & 1) != 0){fragColor.r = 0.6;}
+        else {fragColor.b = 0.6;}
     }
 }
 

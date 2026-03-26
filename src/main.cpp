@@ -46,7 +46,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    Shader program = Shader("/src/vShade.vs", "/src/period.fs");
+    Shader program = Shader("/src/vShade.vs", "/src/period_2.fs");
 
     float vertices[] = {
         -1, -1, 0,

@@ -18,15 +18,17 @@ void main()
     uv *= vec2((scale), (scale));
     uv += vec2((centerX), (centerY));
 
-    vec2 z = uv;
-    vec2 c = vec2(-0.77146, -0.10119);
+    // vec2 z = uv;
+    // vec2 c = vec2(-0.77146, -0.10119);
+    vec2 z = vec2(0.0,0.0);
+    vec2 c = uv;
 
     float bound = 4.0;
     int num_iter = 0;
     float dist = 0;
     int max_period = 20;
     int curr_period = 20;
-    int period = -1;
+    int period_out = -1;
     int period_iter = -1;
     vec2 zOld = vec2(10,10);
 
@@ -37,7 +39,7 @@ void main()
 
         if(dot(z-zOld, z-zOld) < 1e-6)
         {
-            period = curr_period;
+            period_out = curr_period;
             period_iter = i;
             break;
         }
@@ -66,7 +68,7 @@ void main()
         if ((num_iter & 1) != 0){fragColor = vec4(0,0,0,1);}
         else {fragColor = vec4(1,1,1,1);}
     }
-    if(period > 0)
+    if(period_out >= 0)
     {
         if((num_iter & 1) != 0){fragColor.r = 0.6;}
         else {fragColor.b = 0.6;}

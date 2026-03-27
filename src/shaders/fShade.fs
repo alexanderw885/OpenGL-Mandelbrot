@@ -20,11 +20,13 @@ void main()
     uv += vec2((centerX), (centerY));
 
     // Set Z, C
-    vec2 z = vec2(0,0);
+    // vec2 z = vec2(0,0);
+    // vec2 c = uv;
     vec2 c = uv;
+    vec2 z = vec2(0.2, -0.5);
 
     // Values for colouring
-    float bound = 4.0;
+    float bound = 255.0;
     int num_iter = 0;
     float dist = 0;
 
@@ -39,17 +41,17 @@ void main()
         z = complex_mult(z, z);
         z += c;
 
-        // Check for perodicity
-        if (dot(z - oldZ, z - oldZ) <= 1e-8)
-        {
-            break;
-        }
-        curr_period++;
-        if (curr_period >= max_period)
-        {
-            curr_period = 0;
-            oldZ = z;
-        }
+        // // Check for perodicity
+        // if (dot(z - oldZ, z - oldZ) <= 1e-8)
+        // {
+        //     break;
+        // }
+        // curr_period++;
+        // if (curr_period >= max_period)
+        // {
+        //     curr_period = 0;
+        //     oldZ = z;
+        // }
 
         // Check out of bounds
         float d = float(dot(z,z));
@@ -63,6 +65,6 @@ void main()
     float n = float(num_iter + 1) - log(log(sqrt(dist)))/log(2); // smooth colouring
     n = float(int(20*n) % 255) / 255;
 
-    fragColor = vec4(n,n,n,1);
+    fragColor = vec4(n,0,n,1);
 }
 

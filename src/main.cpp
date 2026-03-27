@@ -23,7 +23,7 @@ int main()
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create the window
-    GLFWwindow* window = glfwCreateWindow(curr_width, curr_height, "Can it truly be done?", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(curr_width, curr_height, "???", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -46,7 +46,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    Shader program = Shader("/src/shaders/vertex.vs", "/src/shaders/double.fs");
+    Shader program = Shader("/src/shaders/vertex.vs", "/src/shaders/period_2.fs");
 
     float vertices[] = {
         -1, -1, 0,

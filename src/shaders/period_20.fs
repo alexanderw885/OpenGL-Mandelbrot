@@ -18,10 +18,10 @@ void main()
     uv *= vec2((scale), (scale));
     uv += vec2((centerX), (centerY));
 
+    vec2 z = uv;
+    vec2 c = vec2(-0.5125, 0.5123);
     // vec2 z = uv;
     // vec2 c = vec2(-0.77146, -0.10119);
-    vec2 z = vec2(0.0,0.0);
-    vec2 c = uv;
 
     float bound = 4.0;
     int num_iter = 0;

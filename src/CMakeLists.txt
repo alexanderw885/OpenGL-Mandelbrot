@@ -3,6 +3,7 @@ target_link_libraries(main
     PRIVATE
     glad
     glfw
+    stb
 ) 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # prevents error squiggles for SOURCE_DIR

@@ -6,8 +6,7 @@ target_link_libraries(main
     stb
 ) 
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # prevents error squiggles for SOURCE_DIR
-target_compile_definitions(main 
+target_compile_definitions(main
     PRIVATE
-    SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    ASSET_PATH="${CMAKE_SOURCE_DIR}/assets/"
 )

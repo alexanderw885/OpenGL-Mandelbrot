@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <filesystem>
 
 #include "shader.hpp"
 #include "state.hpp"
@@ -21,6 +22,8 @@ const char* colormap = "twilight.png";
 
 int main()
 {
+
+    std::cout << std::filesystem::current_path() << std::endl;
      // Initialize GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -52,7 +55,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    Shader program = Shader("/src/shaders/vertex.vs", (std::string("/src/shaders/") + fragmentShader).c_str());
+    Shader program = Shader("vertex.vs", fragmentShader);
 
 
     // Set up texture
@@ -64,7 +67,8 @@ int main()
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int tWidth, tHeight, nrChannels;
-    unsigned char* data = stbi_load((std::string(SOURCE_DIR) + "/src/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
+    unsigned char* data = stbi_load((std::string(ASSET_PATH)+"/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
+    std::cout << ASSET_PATH << std::endl;
     if(!data)
     {
         std::cout << "Error loading texture" << std::endl;

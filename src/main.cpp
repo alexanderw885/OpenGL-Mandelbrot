@@ -63,7 +63,7 @@ int main()
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     int tWidth, tHeight, nrChannels;
-    unsigned char* data = stbi_load((std::string(SOURCE_DIR) + "/src/red_blue.jpg").c_str(), &tWidth, &tHeight, &nrChannels, 0);
+    unsigned char* data = stbi_load((std::string(SOURCE_DIR) + "/src/colormaps/twilight.jpg").c_str(), &tWidth, &tHeight, &nrChannels, 0);
     if(!data)
     {
         std::cout << "Error loading texture" << std::endl;

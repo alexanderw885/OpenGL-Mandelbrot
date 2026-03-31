@@ -6,6 +6,7 @@ uniform float centerX;
 uniform float centerY;
 uniform float scale;
 uniform int maxIter;
+uniform sampler1D tex;
 
 vec2 complex_mult(vec2 u, vec2 v)
 {
@@ -27,7 +28,7 @@ void main()
 
     // Values for colouring
     float bound = 255.0;
-    int num_iter = 0;
+    int num_iter = -1;
     float dist = 0;
 
     // Period detection for early escape
@@ -63,8 +64,15 @@ void main()
         }
     }
     float n = float(num_iter + 1) - log(log(sqrt(dist)))/log(2); // smooth colouring
-    n = float(int(20*n) % 255) / 255;
+    n = fract(2 * n);
 
-    fragColor = vec4(n,0,n,1);
+    // Colour for whole image
+    fragColor = texture(tex, n);
+
+    // Colour for if pixel is in fractal
+    if (num_iter < 0)
+    {
+        fragColor = vec4(0,0,0,1);
+    }
 }
 

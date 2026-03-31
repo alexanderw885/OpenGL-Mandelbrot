@@ -5,6 +5,9 @@
 #include "shader.hpp"
 #include "state.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void poll_inputs(GLFWwindow* window, Shader program, State* state);
@@ -46,8 +49,30 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    Shader program = Shader("/src/shaders/vertex.vs", "/src/shaders/period_2.fs");
+    Shader program = Shader("/src/shaders/vertex.vs", "/src/shaders/fTexture.fs");
 
+
+    // Set up texture
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_1D, texture);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    int tWidth, tHeight, nrChannels;
+    unsigned char* data = stbi_load((std::string(SOURCE_DIR) + "/src/red_blue.jpg").c_str(), &tWidth, &tHeight, &nrChannels, 0);
+    if(!data)
+    {
+        std::cout << "Error loading texture" << std::endl;
+    }
+
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, tWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+
+    // Set up background triangles
     float vertices[] = {
         -1, -1, 0,
         -1,  1, 0,

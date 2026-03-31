@@ -61,8 +61,11 @@ void main()
     }
     else if (period_start >= 0)
     {
-        if(period_start % 2 == 0){fragColor.r = 1;}
-        else {fragColor.b = 1;}
+        // if(period_start % 2 == 0){fragColor.r = 1;}
+        // else {fragColor.b = 1;}
+
+        float n = float(period_start) / 50000.;
+        fragColor.b = n;
     }
 }
 

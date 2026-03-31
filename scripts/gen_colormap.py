@@ -11,12 +11,12 @@ def main():
     for i in range(num_colors // 2):
         map[0][i] = start + (end - start)*(2 * i / num_colors)
 
-    map = np.concat([map, map[:,::-1]], axis=1)
+    map = np.concatenate([map, map[:,::-1]], axis=1)
 
     output = np.array(map*255, dtype=np.uint8)
     print(output.shape)
 
-    Image.fromarray(output, "RGB").save("RBLinear.jpg")
+    Image.fromarray(output, "RGB").save("RBLinear.png")
     pass
 
 

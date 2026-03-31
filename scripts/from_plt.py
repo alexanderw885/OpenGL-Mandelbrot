@@ -11,9 +11,7 @@ def main():
     colors[0] = map(np.linspace(0,1,num_colors))[:,:3]
     
     output = np.array(colors * num_colors, dtype=np.uint8)
-    print(colors.shape)
-    print(output.shape)
-    Image.fromarray(output, "RGB").save("twilight.jpg")
+    Image.fromarray(output, "RGB").save("twilight.png")
 
     
 

@@ -64,7 +64,7 @@ void main()
         }
     }
     float n = float(num_iter + 1) - log(log(sqrt(dist)))/log(2); // smooth colouring
-    n = fract(0.2 * n);
+    n = fract(0.05 * n);
 
     // Colour for whole image
     fragColor = texture(tex, n);

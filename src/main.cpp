@@ -16,6 +16,9 @@ void poll_inputs(GLFWwindow* window, Shader program, State* state);
 int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
 
+const char* fragmentShader = "fTexture.fs";
+const char* colormap = "twilight.png";
+
 int main()
 {
      // Initialize GLFW
@@ -49,7 +52,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    Shader program = Shader("/src/shaders/vertex.vs", "/src/shaders/fTexture.fs");
+    Shader program = Shader("/src/shaders/vertex.vs", (std::string("/src/shaders/") + fragmentShader).c_str());
 
 
     // Set up texture
@@ -60,10 +63,8 @@ int main()
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
     int tWidth, tHeight, nrChannels;
-    unsigned char* data = stbi_load((std::string(SOURCE_DIR) + "/src/colormaps/twilight.jpg").c_str(), &tWidth, &tHeight, &nrChannels, 0);
+    unsigned char* data = stbi_load((std::string(SOURCE_DIR) + "/src/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
     if(!data)
     {
         std::cout << "Error loading texture" << std::endl;
@@ -100,7 +101,6 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    
 
     // Only using one vertex array and program, start outside of loop
     glBindVertexArray(VAO);
@@ -114,15 +114,14 @@ int main()
     {
         poll_inputs(window, program, &state);
 
+
         // Render
         float aspect_ratio = (float)(curr_width) / (float)(curr_height);
-        
         program.setFloat("aspectRatio", aspect_ratio);
+
         state.update(program);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-
-        // glfwSetWindowShouldClose(window, true);
 
         // Handle events
         glfwPollEvents();
@@ -143,6 +142,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void poll_inputs(GLFWwindow* window, Shader program, struct State *state)
 {
+    // Exit
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);

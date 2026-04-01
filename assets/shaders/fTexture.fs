@@ -2,29 +2,27 @@
 in vec2 coords;
 out vec4 fragColor;
 uniform float aspectRatio;
-uniform float centerX;
-uniform float centerY;
+uniform double centerX;
+uniform double centerY;
 uniform float scale;
 uniform int maxIter;
 uniform sampler1D tex;
 
-vec2 complex_mult(vec2 u, vec2 v)
+dvec2 complex_mult(dvec2 u, dvec2 v)
 {
-    return vec2(u.x*v.x - u.y*v.y, u.x*v.y + u.y*v.x);
+    return dvec2(u.x*v.x - u.y*v.y, u.x*v.y + u.y*v.x);
 }
 
 void main()
 {
     // Initial setup
-    vec2 uv = vec2((coords.x * aspectRatio), (coords.y));
-    uv *= vec2((scale), (scale));
-    uv += vec2((centerX), (centerY));
+    vec2 temp = vec2((coords.x * aspectRatio), (coords.y));
+    temp *= vec2((scale), (scale));
+    dvec2 uv = temp + dvec2((centerX), (centerY));
 
     // Set Z, C
-    // vec2 z = vec2(0,0);
-    // vec2 c = uv;
-    vec2 c = uv;
-    vec2 z = vec2(0,0);
+    dvec2 c = uv;
+    dvec2 z = dvec2(0,0);
 
     // Values for colouring
     float bound = 255.0;

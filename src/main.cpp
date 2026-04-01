@@ -18,7 +18,7 @@ int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
 
 const char* fragmentShader = "fTexture.fs";
-const char* colormap = "twilight.png";
+const char* colormap = "brocO.png";
 
 int main()
 {

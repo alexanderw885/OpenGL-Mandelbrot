@@ -8,11 +8,42 @@ public:
     float scale = 1.5;
     int max_iter = 50;
 
-    void update(Shader program){
-        program.setDouble("centerX", center[0]);
-        program.setDouble("centerY", center[1]);
-        program.setFloat("scale", scale);
-        program.setInt("maxIter", max_iter);
+    Shader programs[2];
+    
+
+    void set_shader(const char* fragmentShader)
+    {
+        Shader prog;
+        prog.init("vertex.vs", fragmentShader);
+        programs[0] = prog;
+        num_programs = 1;
+        set_current_program(0);
+    }
+    void set_double_shader(const char* fragmentShader)
+    {
+        Shader prog;
+        prog.init("vertex.vs", fragmentShader);
+        programs[1] = prog;
+        num_programs = 2;
+    }
+
+
+    void update(float aspect_ratio){
+        
+        programs[curr_program].setFloat("scale", scale);
+        programs[curr_program].setInt("maxIter", max_iter);
+        programs[curr_program].setFloat("aspectRatio", aspect_ratio);
+
+        if(curr_program == 0)
+        {
+            programs[curr_program].setFloat("centerX", (float)(center[0]));
+            programs[curr_program].setFloat("centerY", (float)(center[1]));
+        }
+        else 
+        {
+            programs[curr_program].setDouble("centerX", center[0]);
+            programs[curr_program].setDouble("centerY", center[1]);
+        }
     }
 
     void center_right(){center[0] += (scale*d_center);}
@@ -23,10 +54,18 @@ public:
     void scale_in(){
         scale *= d_scale;
         std::cout << max_iter << "   " << scale << std::endl;
+        if (num_programs > 1 && curr_program == 0 && scale < 1e-4)
+        {
+            set_current_program(1);
+        }
     }
     void scale_out(){
         scale /= d_scale;
         std::cout << max_iter << "   " << scale << std::endl;
+        if (num_programs > 1 && curr_program == 1 && scale >= 1e-4)
+        {
+            set_current_program(0);
+        }
     }
 
     void iter_up()
@@ -46,4 +85,14 @@ private:
     float d_center = 0.05;
     float d_scale = 0.95;
     float d_iter = 0.98;
+
+    int curr_program = 0;
+    int num_programs = 0;
+
+    void set_current_program(int i)
+    {
+        curr_program = i;
+        std::cout << "changing to program " << i << std::endl;
+        programs[i].use();
+    }
 };

@@ -15,14 +15,15 @@
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void poll_inputs(GLFWwindow* window, Shader program, State* state);
+void poll_inputs(GLFWwindow* window, State* state);
 
 
 int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
 
-const char* fragmentShader = "fTexture.fs";
-const char* colormap = "brocO.png";
+const char* fragmentShader = "period_2.fs";
+const char* doubleShader = NULL;
+const char* colormap = "vikO.png";
 
 int main()
 {
@@ -60,8 +61,8 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    Shader program = Shader("vertex.vs", fragmentShader);
-
+    // Shader program;
+    // program.init("vertex.vs", fragmentShader);
 
     // Set up texture
     unsigned int texture;
@@ -114,20 +115,23 @@ int main()
     // Only using one vertex array and program, start outside of loop
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    program.use();
+    // program.use();
 
     // Initialize state
     State state;
+    state.set_shader(fragmentShader);
+    if (doubleShader != NULL)
+    {
+        state.set_double_shader(doubleShader);
+    }
     
     while(!glfwWindowShouldClose(window))
     {
-        poll_inputs(window, program, &state);
+        poll_inputs(window, &state);
 
         // Render
         float aspect_ratio = (float)(curr_width) / (float)(curr_height);
-        program.setFloat("aspectRatio", aspect_ratio);
-
-        state.update(program);
+        state.update(aspect_ratio);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -149,7 +153,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 
-void poll_inputs(GLFWwindow* window, Shader program, struct State *state)
+void poll_inputs(GLFWwindow* window, State* state)
 {
     // Exit
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

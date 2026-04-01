@@ -21,15 +21,12 @@ void poll_inputs(GLFWwindow* window, State* state);
 int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
 
-const char* fragmentShader = "period_2.fs";
-const char* doubleShader = NULL;
+const char* fragmentShader = "fTexture.fs";
+const char* doubleShader = "dTexture.fs";
 const char* colormap = "vikO.png";
 
 int main()
 {
-    
-
-    std::cout << std::filesystem::current_path() << std::endl;
      // Initialize GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -74,7 +71,6 @@ int main()
 
     int tWidth, tHeight, nrChannels;
     unsigned char* data = stbi_load((std::string(ASSET_PATH)+"/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
-    std::cout << ASSET_PATH << std::endl;
     if(!data)
     {
         std::cout << "Error loading texture" << std::endl;
@@ -119,6 +115,7 @@ int main()
 
     // Initialize state
     State state;
+
     state.set_shader(fragmentShader);
     if (doubleShader != NULL)
     {

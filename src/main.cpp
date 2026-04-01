@@ -6,6 +6,10 @@
 #include "shader.hpp"
 #include "state.hpp"
 
+#include <chrono>
+#include <iostream>
+#include <thread>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -22,12 +26,13 @@ const char* colormap = "brocO.png";
 
 int main()
 {
+    
 
     std::cout << std::filesystem::current_path() << std::endl;
      // Initialize GLFW
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
@@ -118,12 +123,12 @@ int main()
     {
         poll_inputs(window, program, &state);
 
-
         // Render
         float aspect_ratio = (float)(curr_width) / (float)(curr_height);
         program.setFloat("aspectRatio", aspect_ratio);
 
         state.update(program);
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 

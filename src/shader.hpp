@@ -83,6 +83,10 @@ public:
     { 
         glUniform1f(glGetUniformLocation(id, name.c_str()), value); 
     }
+    void setDouble(const std::string &name, double value) const 
+    {
+        glUniform1d(glGetUniformLocation(id, name.c_str()), value);
+    }
 
 
 private:

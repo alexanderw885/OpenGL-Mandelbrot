@@ -4,13 +4,13 @@
 class State
 {
 public:
-    float center[2] = {0,0};
+    double center[2] = {0,0};
     float scale = 1.5;
     int max_iter = 50;
 
     void update(Shader program){
-        program.setFloat("centerX", center[0]);
-        program.setFloat("centerY", center[1]);
+        program.setDouble("centerX", center[0]);
+        program.setDouble("centerY", center[1]);
         program.setFloat("scale", scale);
         program.setInt("maxIter", max_iter);
     }

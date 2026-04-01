@@ -32,7 +32,7 @@ int main()
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Create the window
-    GLFWwindow* window = glfwCreateWindow(curr_width, curr_height, "???", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(curr_width, curr_height, "Zoooooom", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;

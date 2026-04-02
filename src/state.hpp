@@ -7,6 +7,7 @@ public:
     double center[2] = {0,0};
     float scale = 1.5;
     int max_iter = 50;
+    float color_scale = 0.05;
 
     Shader programs[2];
     
@@ -33,6 +34,7 @@ public:
         programs[curr_program].setFloat("scale", scale);
         programs[curr_program].setInt("maxIter", max_iter);
         programs[curr_program].setFloat("aspectRatio", aspect_ratio);
+        programs[curr_program].setFloat("colorScale", color_scale);
 
         if(curr_program == 0)
         {
@@ -51,9 +53,18 @@ public:
     void center_up(){center[1] += (scale*d_center);}
     void center_down(){center[1] -= (scale*d_center);}
 
+    void color_up(){
+        color_scale /= d_color;
+        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
+    }
+    void color_down(){
+        color_scale *= d_color;
+        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
+    }
+
     void scale_in(){
         scale *= d_scale;
-        std::cout << max_iter << "   " << scale << std::endl;
+        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
         if (num_programs > 1 && curr_program == 0 && scale < 1e-4)
         {
             set_current_program(1);
@@ -61,12 +72,13 @@ public:
     }
     void scale_out(){
         scale /= d_scale;
-        std::cout << max_iter << "   " << scale << std::endl;
+        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
         if (num_programs > 1 && curr_program == 1 && scale >= 1e-4)
         {
             set_current_program(0);
         }
     }
+
 
     void iter_up()
     {
@@ -85,6 +97,7 @@ private:
     float d_center = 0.05;
     float d_scale = 0.95;
     float d_iter = 0.98;
+    float d_color = 0.97;
 
     int curr_program = 0;
     int num_programs = 0;

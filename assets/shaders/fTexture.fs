@@ -6,6 +6,7 @@ uniform float centerX;
 uniform float centerY;
 uniform float scale;
 uniform int maxIter;
+uniform float colorScale;
 uniform sampler1D tex;
 
 vec2 complex_mult(vec2 u, vec2 v)
@@ -21,10 +22,28 @@ void main()
     uv += vec2((centerX), (centerY));
 
     // Set Z, C
+
+    // Mandelbrot
     // vec2 z = vec2(0,0);
     // vec2 c = uv;
+
+    // Broken mandelbrot
+    vec2 z = vec2(0.2, -0.5);
     vec2 c = uv;
-    vec2 z = vec2(0,0);
+
+    // Julia set 1
+    // vec2 z = uv;
+    // vec2 c = vec2(-0.5123, 0.5125);
+
+    // Julia set 2
+    // vec2 z = uv;
+    // vec2 c = vec2(-0.4, 0.6);
+
+    // Test
+    // vec2 c = uv;
+    // vec2 z = vec2(-0.1528, 1.0397);
+
+    
 
     // Values for colouring
     float bound = 255.0;
@@ -64,7 +83,7 @@ void main()
         }
     }
     float n = float(num_iter + 1) - log(log(sqrt(dist)))/log(2); // smooth colouring
-    n = fract(0.05 * n);
+    n = fract(colorScale * n);
 
     // Colour for whole image
     fragColor = texture(tex, n);

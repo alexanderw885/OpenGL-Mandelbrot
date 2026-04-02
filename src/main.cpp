@@ -6,10 +6,6 @@
 #include "shader.hpp"
 #include "state.hpp"
 
-#include <chrono>
-#include <iostream>
-#include <thread>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -23,7 +19,7 @@ int curr_height = 1080 / 2;
 
 const char* fragmentShader = "fTexture.fs";
 const char* doubleShader = "dTexture.fs";
-const char* colormap = "vikO.png";
+const char* colormap = "romaO.png";
 
 int main()
 {
@@ -183,5 +179,12 @@ void poll_inputs(GLFWwindow* window, State* state)
     }
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS){
         state->iter_down();
+    }
+    // Color scale
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS){
+        state->color_up();
+    }
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS){
+        state->color_down();
     }
 }

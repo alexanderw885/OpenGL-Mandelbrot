@@ -16,7 +16,7 @@ public:
         Shader prog;
         prog.init("vertex.vs", fragmentShader);
         programs[0] = prog;
-        num_programs = 1;
+        if (num_programs == 0) num_programs = 1;
         set_current_program(0);
     }
     void set_double_shader(const char* fragmentShader)
@@ -24,7 +24,7 @@ public:
         Shader prog;
         prog.init("vertex.vs", fragmentShader);
         programs[1] = prog;
-        num_programs = 2;
+        if (num_programs < 2) num_programs = 2;
     }
 
 

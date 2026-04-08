@@ -24,12 +24,12 @@ void main()
     // Set Z, C
 
     // Mandelbrot
-    // vec2 z = vec2(0,0);
-    // vec2 c = uv;
+    vec2 z = vec2(0,0);
+    vec2 c = uv;
 
     // Broken mandelbrot
-    vec2 z = vec2(0.2, -0.5);
-    vec2 c = uv;
+    // vec2 z = vec2(0.2, -0.5);
+    // vec2 c = uv;
 
     // Julia set 1
     // vec2 z = uv;
@@ -82,7 +82,7 @@ void main()
             break;
         }
     }
-    float n = float(num_iter + 1) - log(log(sqrt(dist)))/log(2); // smooth colouring
+    float n = float(num_iter + 1) - log(log(dist) / 2 )/log(2); // smooth colouring
     n = fract(colorScale * n);
 
     // Colour for whole image

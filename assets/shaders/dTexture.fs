@@ -24,12 +24,12 @@ void main()
     // Set Z, C
 
     // Mandelbrot
-    // dvec2 c = uv;
-    // dvec2 z = dvec2(0,0);
+    dvec2 c = uv;
+    dvec2 z = dvec2(0,0);
 
     // Broken mandelbrot
-    dvec2 z = dvec2(0.2, -0.5);
-    dvec2 c = uv;
+    // dvec2 c = uv;
+    // dvec2 z = dvec2(0.2, -0.5);
 
     // Julia set 1
     // dvec2 z = uv;
@@ -82,7 +82,7 @@ void main()
             break;
         }
     }
-    float n = float(num_iter + 1) - log(log(sqrt(dist)))/log(2); // smooth colouring
+    float n = float(num_iter + 1) - log(log(dist) / 2)/log(2); // smooth colouring
     n = fract(colorScale * n);
 
     // Colour for whole image

@@ -2,20 +2,26 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <filesystem>
+#include <sys/stat.h>
 
 #include "shader.hpp"
 #include "state.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void poll_inputs(GLFWwindow* window, State* state);
+void render_image(State* state);
 
 
 int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
+const int picture_width = 3840 / 2;
+const int picture_height = 2160 / 2;
 
 const char* fragmentShader = "fTexture.fs";
 const char* doubleShader = "dTexture.fs";
@@ -128,13 +134,11 @@ int main()
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-
         // Handle events
         glfwPollEvents();
         glfwSwapBuffers(window);
-
     }
-
+    glfwTerminate();
 }
 
 
@@ -186,5 +190,78 @@ void poll_inputs(GLFWwindow* window, State* state)
     }
     if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS){
         state->color_down();
+    }
+
+    // take image
+    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && !state->image_pressed)
+    {
+        state->image_pressed = true;
+        GLint oldVP[4];
+        glGetIntegerv(GL_VIEWPORT, oldVP);
+        std::cout << "Taking image\n";
+
+        render_image(state);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(oldVP[0], oldVP[1], oldVP[2], oldVP[3]);
+    }
+    if (state->image_pressed && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
+    {
+        std::cout << "Release key\n";
+        state->image_pressed = false;
+    }
+}
+
+
+void render_image(State* state) {
+    state->update((float)(picture_width) / (float)(picture_height));
+
+    unsigned int FBO, tex;
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    glViewport(0, 0, picture_width, picture_height);
+
+    // Texture
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, picture_width, picture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    {
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // read buffer into array
+        unsigned char* data = new unsigned char[picture_width * picture_height * 4];
+        glReadPixels(0, 0, picture_width, picture_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        // flip data
+        for(int y = 0; y < picture_height / 2; ++y) {
+            for(int x = 0; x < picture_width * 4; ++x) {
+                std::swap(data[y * picture_width * 4 + x], data[(picture_height - 1 - y) * picture_width * 4 + x]);
+            }
+        }
+
+        std::string last = std::string(OUTPUT_PATH) + "last.png";
+        stbi_write_png(last.c_str(), picture_width, picture_height, 4, data, picture_width*4);
+
+        double x = state->center[0];
+        double y = state->center[1];
+        double zoom = state->scale;
+        std::string output_name = std::string(OUTPUT_PATH)
+            + "x" + std::to_string(x)
+            + "y" + std::to_string(y)
+            + "scale" + std::to_string(zoom)
+            + ".png";
+
+        stbi_write_png(output_name.c_str(), picture_width, picture_height, 4, data, picture_width*4);
+        std::cout << "Saved image to " << output_name << std::endl;
+        delete[] data;
+
+    } else {
+        std::cout << "Error completing framebuffer, picture not taken\n";
     }
 }

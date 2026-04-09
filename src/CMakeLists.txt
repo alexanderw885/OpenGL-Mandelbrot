@@ -9,4 +9,5 @@ target_link_libraries(main
 target_compile_definitions(main
     PRIVATE
     ASSET_PATH="${CMAKE_SOURCE_DIR}/assets/"
+    OUTPUT_PATH="${CMAKE_SOURCE_DIR}/output/"
 )

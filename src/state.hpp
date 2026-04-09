@@ -8,6 +8,7 @@ public:
     float scale = 1.5;
     int max_iter = 50;
     float color_scale = 0.05;
+    bool image_pressed = false;
 
     Shader programs[2];
     

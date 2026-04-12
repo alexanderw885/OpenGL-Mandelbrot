@@ -44,6 +44,9 @@ void main()
     // vec2 z = vec2(-0.1528, 1.0397);
 
     
+    // for more efficient computation
+    float zx_sq = z.x * z.x;
+    float zy_sq = z.y * z.y;
 
     // Values for colouring
     float bound = 255.0;
@@ -51,15 +54,16 @@ void main()
     float dist = 0;
 
     // Period detection for early escape
-    int max_period = 50;
-    int curr_period = 50;
-    vec2 oldZ = vec2(100, 100);
+    // int max_period = 50;
+    // int curr_period = 50;
+    // vec2 oldZ = vec2(100, 100);
 
     for(int i = 0; i < maxIter; i++)
     {
         // Calculate new Z
-        z = complex_mult(z, z);
-        z += c;
+        z = vec2(zx_sq - zy_sq, 2 * z.x * z.y) + c;
+        zx_sq = z.x * z.x;
+        zy_sq = z.y * z.y;
 
         // // Check for perodicity
         // if (dot(z - oldZ, z - oldZ) <= 1e-8)
@@ -74,7 +78,7 @@ void main()
         // }
 
         // Check out of bounds
-        float d = float(dot(z,z));
+        float d = float(zx_sq + zy_sq);
         if (d >= bound)
         {
             num_iter = i;

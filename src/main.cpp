@@ -20,8 +20,8 @@ void render_image(State* state);
 
 int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
-const int picture_width = 3840 / 2;
-const int picture_height = 2160 / 2;
+const int picture_width = 3840;
+const int picture_height = 2160;
 
 const char* fragmentShader = "fTexture.fs";
 const char* doubleShader = "dTexture.fs";
@@ -138,7 +138,6 @@ int main()
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
-    glfwTerminate();
 }
 
 

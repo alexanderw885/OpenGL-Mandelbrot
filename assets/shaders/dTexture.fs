@@ -43,7 +43,9 @@ void main()
     // dvec2 c = uv;
     // dvec2 z = dvec2(-0.1528, 1.0397);
 
-    
+    // for more efficient computation
+    double zx_sq = z.x * z.x;
+    double zy_sq = z.y * z.y;    
 
     // Values for colouring
     float bound = 255.0;
@@ -58,11 +60,12 @@ void main()
     for(int i = 0; i < maxIter; i++)
     {
         // Calculate new Z
-        z = complex_mult(z, z);
-        z += c;
+        z = dvec2(zx_sq - zy_sq, 2 * z.x * z.y) + c;
+        zx_sq = z.x * z.x;
+        zy_sq = z.y * z.y;
 
         // // Check for perodicity
-        // if (dot(z - oldZ, z - oldZ) <= 1e-14)
+        // if (dot(z - oldZ, z - oldZ) <= 1e-8)
         // {
         //     break;
         // }
@@ -74,7 +77,7 @@ void main()
         // }
 
         // Check out of bounds
-        float d = float(dot(z,z));
+        float d = float(zx_sq + zy_sq);
         if (d >= bound)
         {
             num_iter = i;

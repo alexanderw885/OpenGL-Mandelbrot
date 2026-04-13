@@ -7,11 +7,6 @@
 #include "shader.hpp"
 #include "state.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image_write.h>
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void poll_inputs(GLFWwindow* window, State* state);
@@ -20,8 +15,6 @@ void render_image(State* state);
 
 int curr_width = 1980 / 2;
 int curr_height = 1080 / 2;
-const int picture_width = 3840;
-const int picture_height = 2160;
 
 const char* fragmentShader = "fTexture.fs";
 const char* doubleShader = "dTexture.fs";
@@ -29,7 +22,7 @@ const char* colormap = "romaO.png";
 
 int main()
 {
-     // Initialize GLFW
+    // Initialize GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -63,22 +56,22 @@ int main()
     // Shader program;
     // program.init("vertex.vs", fragmentShader);
 
-    // Set up texture
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_1D, texture);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // // Set up texture
+    // unsigned int texture;
+    // glGenTextures(1, &texture);
+    // glBindTexture(GL_TEXTURE_1D, texture);
+    // glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int tWidth, tHeight, nrChannels;
-    unsigned char* data = stbi_load((std::string(ASSET_PATH)+"/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
-    if(!data)
-    {
-        std::cout << "Error loading texture" << std::endl;
-    }
+    // int tWidth, tHeight, nrChannels;
+    // unsigned char* data = stbi_load((std::string(ASSET_PATH)+"/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
+    // if(!data)
+    // {
+    //     std::cout << "Error loading texture" << std::endl;
+    // }
 
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, tWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    // glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, tWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
 
     // Set up background triangles
@@ -116,7 +109,10 @@ int main()
     // program.use();
 
     // Initialize state
-    State state;
+    std::string cfg_path = std::string(CFG_PATH) + "cfg.json";
+
+    // State state;
+    State state(cfg_path.c_str());
 
     state.set_shader(fragmentShader);
     if (doubleShader != NULL)
@@ -213,17 +209,19 @@ void poll_inputs(GLFWwindow* window, State* state)
 
 
 void render_image(State* state) {
-    state->update((float)(picture_width) / (float)(picture_height));
+    int pWidth = state->pic_width;
+    int pHeight = state->pic_height;
+    state->update((float)(pWidth) / (float)(pHeight));
 
     unsigned int FBO, tex;
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    glViewport(0, 0, picture_width, picture_height);
+    glViewport(0, 0, pWidth, pHeight);
 
     // Texture
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, picture_width, picture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pWidth, pHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
@@ -234,18 +232,18 @@ void render_image(State* state) {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // read buffer into array
-        unsigned char* data = new unsigned char[picture_width * picture_height * 4];
-        glReadPixels(0, 0, picture_width, picture_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        unsigned char* data = new unsigned char[pWidth * pHeight * 4];
+        glReadPixels(0, 0, state->pic_width, state->pic_height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
         // flip data
-        for(int y = 0; y < picture_height / 2; ++y) {
-            for(int x = 0; x < picture_width * 4; ++x) {
-                std::swap(data[y * picture_width * 4 + x], data[(picture_height - 1 - y) * picture_width * 4 + x]);
+        for(int y = 0; y < pHeight / 2; ++y) {
+            for(int x = 0; x < pWidth * 4; ++x) {
+                std::swap(data[y * pWidth * 4 + x], data[(pHeight - 1 - y) * pWidth * 4 + x]);
             }
         }
 
         std::string last = std::string(OUTPUT_PATH) + "last.png";
-        stbi_write_png(last.c_str(), picture_width, picture_height, 4, data, picture_width*4);
+        stbi_write_png(last.c_str(), pWidth, pHeight, 4, data, pWidth*4);
 
         double x = state->center[0];
         double y = state->center[1];
@@ -256,7 +254,7 @@ void render_image(State* state) {
             + "scale" + std::to_string(zoom)
             + ".png";
 
-        stbi_write_png(output_name.c_str(), picture_width, picture_height, 4, data, picture_width*4);
+        stbi_write_png(output_name.c_str(), pWidth, pHeight, 4, data, pWidth*4);
         std::cout << "Saved image to " << output_name << std::endl;
         delete[] data;
 

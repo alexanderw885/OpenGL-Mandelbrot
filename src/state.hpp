@@ -1,4 +1,13 @@
 #include <glad/glad.h>
+#include <rapidjson/include/rapidjson/document.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
+
 #include "shader.hpp"
 
 class State
@@ -10,8 +19,60 @@ public:
     float color_scale = 0.05;
     bool image_pressed = false;
 
+    int pic_width = 1920;
+    int pic_height = 1080;
+
     Shader programs[2];
+    unsigned int texture;
     
+    State(const char* config_path)
+    {
+        rapidjson::Document cfg;
+
+        std::fstream cfg_file(config_path);
+        std::string json_cfg(
+            (std::istreambuf_iterator<char>(cfg_file)),
+            std::istreambuf_iterator<char>()
+        );
+
+
+        rapidjson::ParseResult ok = cfg.Parse(json_cfg.c_str());
+        if (!ok)
+        {
+            std::cout << "Error code " << ok.Code() << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        cfg_file.close();
+
+        scale = cfg["scale"].GetFloat();
+        max_iter = cfg["iterations"].GetInt();
+        center[0] = cfg["center"][0].GetDouble();
+        center[1] = cfg["center"][1].GetDouble();
+        pic_width = cfg["pic_width"].GetInt();
+        pic_height = cfg["pic_height"].GetInt();
+        texture = set_colormap(cfg["colormap"].GetString());
+    }
+
+    unsigned int set_colormap(const char* filename)
+    {
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_1D, texture);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        int tWidth, tHeight, nrChannels;
+        unsigned char* data = stbi_load((std::string(ASSET_PATH) + "colormaps/" + filename).c_str(), &tWidth, &tHeight, &nrChannels, 0);
+        if(!data)
+        {
+            std::cout << "Error loading texture" << std::endl;
+        }
+
+        glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, tWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        std::cout << (std::string(ASSET_PATH) + "colormaps/" + filename).c_str()<< std::endl;
+        return texture;
+    }
 
     void set_shader(const char* fragmentShader)
     {

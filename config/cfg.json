@@ -1,0 +1,20 @@
+{
+    "shaders" : [
+    {
+        "filename" : "Texture.ds",
+        "type" : "float",
+        "start" : 0
+    },
+    {
+       "filename" : "Texture.ds",
+        "type" : "double",
+        "start" : 1e-5 
+    }
+    ],
+    "colormap" : "bamO.png",
+    "center" : [0.315, -0.0275],
+    "scale" : 0.007,
+    "iterations" : 100,
+    "pic_width" : 1920,
+    "pic_height" : 1080
+}

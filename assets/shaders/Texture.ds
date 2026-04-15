@@ -2,8 +2,8 @@
 in vec2 coords;
 out vec4 fragColor;
 uniform float aspectRatio;
-uniform dynf centerX;
-uniform dynf centerY;
+uniform double centerX;
+uniform double centerY;
 uniform float scale;
 uniform int maxIter;
 uniform float colorScale;

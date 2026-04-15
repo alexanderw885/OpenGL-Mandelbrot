@@ -10,6 +10,14 @@
 
 #include "shader.hpp"
 
+using namespace std;
+
+struct ShaderList {
+    Shader shader;
+    float start_scale;
+};
+
+
 class State
 {
 public:
@@ -22,24 +30,26 @@ public:
     int pic_width = 1920;
     int pic_height = 1080;
 
-    Shader programs[2];
+    vector<ShaderList> programs;
+
+    Shader programs_array[2];
     unsigned int texture;
     
     State(const char* config_path)
     {
         rapidjson::Document cfg;
 
-        std::fstream cfg_file(config_path);
-        std::string json_cfg(
-            (std::istreambuf_iterator<char>(cfg_file)),
-            std::istreambuf_iterator<char>()
+        fstream cfg_file(config_path);
+        string json_cfg(
+            (istreambuf_iterator<char>(cfg_file)),
+            istreambuf_iterator<char>()
         );
 
 
         rapidjson::ParseResult ok = cfg.Parse(json_cfg.c_str());
         if (!ok)
         {
-            std::cout << "Error code " << ok.Code() << std::endl;
+            cout << "Error code " << ok.Code() << endl;
             exit(EXIT_FAILURE);
         }
         cfg_file.close();
@@ -51,6 +61,42 @@ public:
         pic_width = cfg["pic_width"].GetInt();
         pic_height = cfg["pic_height"].GetInt();
         texture = set_colormap(cfg["colormap"].GetString());
+
+        // Load shaders
+        for (rapidjson::Value::ConstValueIterator iter = cfg["shaders"].Begin(); iter != cfg["shaders"].End(); ++iter) 
+        {
+            const char* filename = (*iter)["filename"].GetString();
+            const char* type = (*iter)["type"].GetString();
+            
+            Shader prog;
+            prog.init("vertex.vs", filename, type);
+
+            ShaderList list;
+            list.shader = prog;
+            list.start_scale = (*iter)["start"].GetFloat();
+            programs.push_back(list);
+        }
+        // Sort vector by scale, descending
+        std::sort(
+            programs.begin(), 
+            programs.end(),
+            [](const ShaderList& a, const ShaderList& b) {
+                return a.start_scale > b.start_scale;
+            });
+
+        // activate current shader
+        curr_program = programs.size() - 1;
+        for(int i = 1; i < programs.size(); i++)
+        {
+            if (programs[i].start_scale < scale)
+            {
+                cout << "selected\n";
+                curr_program = i - 1;
+                break;
+            }
+        }
+        std::cout << "using program " << curr_program << " with id " << programs[curr_program].shader.id << endl;
+        programs[curr_program].shader.use();
     }
 
     unsigned int set_colormap(const char* filename)
@@ -63,51 +109,26 @@ public:
         glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         int tWidth, tHeight, nrChannels;
-        unsigned char* data = stbi_load((std::string(ASSET_PATH) + "colormaps/" + filename).c_str(), &tWidth, &tHeight, &nrChannels, 0);
+        unsigned char* data = stbi_load((string(ASSET_PATH) + "colormaps/" + filename).c_str(), &tWidth, &tHeight, &nrChannels, 0);
         if(!data)
         {
-            std::cout << "Error loading texture" << std::endl;
+            cout << "Error loading texture" << endl;
         }
 
         glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, tWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        std::cout << (std::string(ASSET_PATH) + "colormaps/" + filename).c_str()<< std::endl;
+        cout << (string(ASSET_PATH) + "colormaps/" + filename).c_str()<< endl;
         return texture;
-    }
-
-    void set_shader(const char* fragmentShader)
-    {
-        Shader prog;
-        prog.init("vertex.vs", fragmentShader);
-        programs[0] = prog;
-        if (num_programs == 0) num_programs = 1;
-        set_current_program(0);
-    }
-    void set_double_shader(const char* fragmentShader)
-    {
-        Shader prog;
-        prog.init("vertex.vs", fragmentShader);
-        programs[1] = prog;
-        if (num_programs < 2) num_programs = 2;
     }
 
 
     void update(float aspect_ratio){
         
-        programs[curr_program].setFloat("scale", scale);
-        programs[curr_program].setInt("maxIter", max_iter);
-        programs[curr_program].setFloat("aspectRatio", aspect_ratio);
-        programs[curr_program].setFloat("colorScale", color_scale);
-
-        if(curr_program == 0)
-        {
-            programs[curr_program].setFloat("centerX", (float)(center[0]));
-            programs[curr_program].setFloat("centerY", (float)(center[1]));
-        }
-        else 
-        {
-            programs[curr_program].setDouble("centerX", center[0]);
-            programs[curr_program].setDouble("centerY", center[1]);
-        }
+        programs[curr_program].shader.setFloat("scale", scale);
+        programs[curr_program].shader.setInt("maxIter", max_iter);
+        programs[curr_program].shader.setFloat("aspectRatio", aspect_ratio);
+        programs[curr_program].shader.setFloat("colorScale", color_scale);
+        programs[curr_program].shader.setDouble("centerX", center[0]);
+        programs[curr_program].shader.setDouble("centerY", center[1]);
     }
 
     void center_right(){center[0] += (scale*d_center);}
@@ -117,27 +138,27 @@ public:
 
     void color_up(){
         color_scale /= d_color;
-        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
+        cout << max_iter << "   " << scale << "   " << color_scale << endl;
     }
     void color_down(){
         color_scale *= d_color;
-        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
+        cout << max_iter << "   " << scale << "   " << color_scale << endl;
     }
 
     void scale_in(){
         scale *= d_scale;
-        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
-        if (num_programs > 1 && curr_program == 0 && scale < 1e-4)
+        cout << max_iter << "   " << scale << "   " << color_scale << endl;
+        if (curr_program < programs.size() -1 && scale < programs[curr_program+1].start_scale)
         {
-            set_current_program(1);
+            set_current_program(curr_program+1);
         }
     }
     void scale_out(){
         scale /= d_scale;
-        std::cout << max_iter << "   " << scale << "   " << color_scale << std::endl;
-        if (num_programs > 1 && curr_program == 1 && scale >= 1e-4)
+        cout << max_iter << "   " << scale << "   " << color_scale << endl;
+        if (curr_program > 0 && scale > programs[curr_program].start_scale)
         {
-            set_current_program(0);
+            set_current_program(curr_program - 1);
         }
     }
 
@@ -146,13 +167,13 @@ public:
     {
         max_iter /= d_iter;
         if(max_iter <= 50) max_iter += 1;
-        std::cout << max_iter << "   " << scale << std::endl;
+        cout << max_iter << "   " << scale << endl;
     }
     void iter_down(){
         max_iter *= d_iter;
         if (max_iter <= 50) max_iter -= 1;
         if(max_iter <= 10) max_iter = 10;
-        std::cout << max_iter << "   " << scale << std::endl;
+        cout << max_iter << "   " << scale << endl;
     }
 
 private:
@@ -162,12 +183,11 @@ private:
     float d_color = 0.97;
 
     int curr_program = 0;
-    int num_programs = 0;
 
     void set_current_program(int i)
     {
         curr_program = i;
-        std::cout << "changing to program " << i << std::endl;
-        programs[i].use();
+        cout << "changing to program " << i << endl;
+        programs[i].shader.use();
     }
 };

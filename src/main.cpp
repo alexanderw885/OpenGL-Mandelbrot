@@ -52,28 +52,6 @@ int main()
     // Reset the viewport whenever the window is resized
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-
-    // Shader program;
-    // program.init("vertex.vs", fragmentShader);
-
-    // // Set up texture
-    // unsigned int texture;
-    // glGenTextures(1, &texture);
-    // glBindTexture(GL_TEXTURE_1D, texture);
-    // glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // int tWidth, tHeight, nrChannels;
-    // unsigned char* data = stbi_load((std::string(ASSET_PATH)+"/colormaps/" + colormap).c_str(), &tWidth, &tHeight, &nrChannels, 0);
-    // if(!data)
-    // {
-    //     std::cout << "Error loading texture" << std::endl;
-    // }
-
-    // glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, tWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-
-
     // Set up background triangles
     float vertices[] = {
         -1, -1, 0,
@@ -106,20 +84,12 @@ int main()
     // Only using one vertex array and program, start outside of loop
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // program.use();
 
     // Initialize state
     std::string cfg_path = std::string(CFG_PATH) + "cfg.json";
-
-    // State state;
     State state(cfg_path.c_str());
 
-    state.set_shader(fragmentShader);
-    if (doubleShader != NULL)
-    {
-        state.set_double_shader(doubleShader);
-    }
-    
+
     while(!glfwWindowShouldClose(window))
     {
         poll_inputs(window, &state);

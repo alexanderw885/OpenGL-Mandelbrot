@@ -3,17 +3,16 @@
     {
         "filename" : "Texture.ds",
         "type" : "float",
-        "start" : 0
+        "start" : 512
     },
     {
-       "filename" : "Texture.ds",
+        "filename" : "Texture.ds",
         "type" : "double",
-        "start" : 1e-5 
-    }
-    ],
+        "start" : 1e-4
+    }],
     "colormap" : "bamO.png",
     "center" : [0.315, -0.0275],
-    "scale" : 0.007,
+    "scale" : 1,
     "iterations" : 100,
     "pic_width" : 1920,
     "pic_height" : 1080

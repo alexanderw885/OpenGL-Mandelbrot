@@ -1,16 +1,10 @@
 ## Save pictures
-- use framebuffer
-- Different aspect ratios?
-- filenaming scheme
+- split image into multiple framebuffers to allow for larger photos
+
 ## Dynamic shader creation
-- make one shader, then convert to floats and doubles?
-- take arguments to parameterize either Z or C
-- determine non-parameterized starting values
+- Change from janky regex solution to proper solution using defines in the shader
+
 ## Config file
-- shader to use
-    - min+max iterations
-    - doubles or floats
-    - options to configure dynamic shader
 - colormap
 - add button to reload application with updated config file
     - reset camera or keep where it is?
@@ -25,6 +19,7 @@
     - start time
     - end time
     - function to apply
+    
 ## In-window UI
 - Show runtime parameters
 - add input boxes and/or sliders?

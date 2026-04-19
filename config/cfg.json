@@ -1,13 +1,13 @@
 {
     "shaders" : [
     {
-        "filename" : "Texture.ds",
-        "type" : "float",
+        "filename" : "Texture.fs",
+        "use_double" : false,
         "start" : 512
     },
     {
-        "filename" : "Texture.ds",
-        "type" : "double",
+        "filename" : "Texture.fs",
+        "use_double" : true,
         "start" : 1e-4
     }],
     "colormap" : "bamO.png",

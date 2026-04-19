@@ -1,4 +1,13 @@
 #version 400 core
+
+#ifdef DOUBLE
+    #define dynf double
+    #define dfvec2 dvec2
+#else
+    #define dynf float
+    #define dfvec2 vec2
+#endif
+
 in vec2 coords;
 out vec4 fragColor;
 uniform float aspectRatio;
@@ -19,36 +28,27 @@ void main()
     uv += dfvec2((centerX), (centerY));
 
     dfvec2 z = uv;
-    dfvec2 c = vec2(-0.5125, 0.5123);
-    // vec2 z = uv;
-    // vec2 c = vec2(-0.77146, -0.10119);
+    dfvec2 c = vec2(-0.77146, -0.10119);
 
     float bound = 4.0;
     int num_iter = 0;
     float dist = 0;
-    int max_period = 20;
-    int curr_period = 20;
-    int period_out = -1;
-    int period_iter = -1;
-    dfvec2 zOld = dfvec2(10,10);
+
+    int period_start = -1;
+    dfvec4 old = dfvec4(0,0,0,0);
 
     for(int i = 0; i < maxIter; i++)
     {
+        old.xy = old.zw;
+        old.zw = z;
+
         z = complex_mult(z, z);
         z += c;
 
-        if(dot(z-zOld, z-zOld) < 1e-6)
+        if(i > 20 && dot(z - old.xy, z - old.xy) < 1e-8)
         {
-            period_out = curr_period;
-            period_iter = i;
+            period_start = i;
             break;
-        }
-
-        curr_period += 1;
-        if(curr_period > max_period)
-        {
-            curr_period = 0;
-            zOld = z;
         }
 
         float d = float(dot(z,z));
@@ -68,10 +68,13 @@ void main()
         if ((num_iter & 1) != 0){fragColor = vec4(0,0,0,1);}
         else {fragColor = vec4(1,1,1,1);}
     }
-    if(period_out >= 0)
+    else if (period_start >= 0)
     {
-        if((num_iter & 1) != 0){fragColor.r = 0.6;}
-        else {fragColor.b = 0.6;}
+        // if(period_start % 2 == 0){fragColor.r = 1;}
+        // else {fragColor.b = 1;}
+
+        float n = float(period_start) / 50000.;
+        fragColor.b = n;
     }
 }
 

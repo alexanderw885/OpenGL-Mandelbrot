@@ -1,8 +1,12 @@
+#pragma once
+
 #include <glad/glad.h>
 #include <rapidjson/include/rapidjson/document.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -66,10 +70,10 @@ public:
         for (rapidjson::Value::ConstValueIterator iter = cfg["shaders"].Begin(); iter != cfg["shaders"].End(); ++iter) 
         {
             const char* filename = (*iter)["filename"].GetString();
-            const char* type = (*iter)["type"].GetString();
+            const bool use_double = (*iter)["use_double"].GetBool();
             
             Shader prog;
-            prog.init("vertex.vs", filename, type);
+            prog.init("vertex.vs", filename, use_double);
 
             ShaderList list;
             list.shader = prog;

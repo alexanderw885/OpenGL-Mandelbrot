@@ -1,4 +1,13 @@
 #version 400 core
+
+#ifdef DOUBLE
+    #define dynf double
+    #define dfvec2 dvec2
+#else
+    #define dynf float
+    #define dfvec2 vec2
+#endif
+
 in vec2 coords;
 out vec4 fragColor;
 uniform float aspectRatio;

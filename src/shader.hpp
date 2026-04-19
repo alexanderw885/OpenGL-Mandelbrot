@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <cstring>
-#include <regex>
+// #include <regex>
 
 #include <glad/glad.h>
 
@@ -15,7 +15,7 @@ public:
     unsigned int id;
 
     // constructor
-    void init(const char* vertexPath, const char* fragmentPath, const char* type = "")
+    void init(const char* vertexPath, const char* fragmentPath, const bool use_double)
     {
     // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -48,17 +48,22 @@ public:
         }
         
 
-        if(strcmp(type, "float")==0 || strcmp(type, "double")==0)
+        // if(strcmp(type, "float")==0 || strcmp(type, "double")==0)
+        // {
+        //     std::regex regex_float("dynf");
+        //     std::regex regex_vec("dfvec");
+        //     fragmentCode = std::regex_replace(fragmentCode, regex_float, type);
+        //     const char* vec_type = (!strcmp(type, "float"))? "vec" : "dvec";
+        //     fragmentCode = std::regex_replace(fragmentCode, regex_vec, vec_type);
+        // } 
+        // else if (strcmp(type, "")) 
+        // {
+        //     std::cout << "Invalid type for dynamic shader: " << type << std::endl;
+        // }
+        if (use_double)
         {
-            std::regex regex_float("dynf");
-            std::regex regex_vec("dfvec");
-            fragmentCode = std::regex_replace(fragmentCode, regex_float, type);
-            const char* vec_type = (!strcmp(type, "float"))? "vec" : "dvec";
-            fragmentCode = std::regex_replace(fragmentCode, regex_vec, vec_type);
-        } 
-        else if (strcmp(type, "")) 
-        {
-            std::cout << "Invalid type for dynamic shader: " << type << std::endl;
+            int pos = fragmentCode.find('\n');
+            fragmentCode.insert(pos+1, "#define DOUBLE\n");
         }
         const char* vShaderCode = vertexCode.c_str();
         const char * fShaderCode = fragmentCode.c_str();

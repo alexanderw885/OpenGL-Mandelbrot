@@ -1,9 +1,6 @@
 ## Save pictures
 - split image into multiple framebuffers to allow for larger photos
 
-## Dynamic shader creation
-- Change from janky regex solution to proper solution using defines in the shader
-
 ## Config file
 - colormap
 - add button to reload application with updated config file
